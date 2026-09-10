@@ -8,7 +8,6 @@ class Task6
 
         int cardNumber = int.Parse(Console.ReadLine());
 
-       
         int deptRem = cardNumber % 10;
         string department = "";
 
@@ -25,11 +24,12 @@ class Task6
 
         Console.WriteLine(department);
 
-
         if (cardNumber % 2 == 0)
         {
             Console.WriteLine("пільгова картка: так");
         }
+
+        
         if (cardNumber % 3 == 0)
         {
             Console.WriteLine("черговий огляд: так");
