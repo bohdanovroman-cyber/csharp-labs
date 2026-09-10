@@ -10,7 +10,6 @@ class Task1
         string inputHeight = Console.ReadLine();
         double weight = double.Parse(inputWeight.Replace(',', '.'), CultureInfo.InvariantCulture);
         double height = double.Parse(inputHeight.Replace(',', '.'), CultureInfo.InvariantCulture);
-
         
         double bmi = weight / (height * height);
         Console.WriteLine(bmi);
