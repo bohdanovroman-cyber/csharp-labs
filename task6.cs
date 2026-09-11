@@ -1,38 +1,26 @@
 using System;
 
-class Task6
+public static class Task6
 {
-    static void Main()
+    public static void Run()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        int cardNumber = int.Parse(Console.ReadLine());
+        int card = int.Parse(Console.ReadLine());
+        int lastDigit = card % 10;
 
-        int deptRem = cardNumber % 10;
-        string department = "";
-
-        if (deptRem == 0 || deptRem == 1)
-            department = "відділення: загальна терапія";
-        else if (deptRem == 2 || deptRem == 3)
-            department = "відділення: хірургія";
-        else if (deptRem == 4 || deptRem == 5)
-            department = "відділення: кардіологія";
-        else if (deptRem == 6 || deptRem == 7)
-            department = "відділення: неврологія";
-        else if (deptRem == 8 || deptRem == 9)
-            department = "відділення: офтальмологія";
-
-        Console.WriteLine(department);
-
-        if (cardNumber % 2 == 0)
+        string dept = lastDigit switch
         {
-            Console.WriteLine("пільгова картка: так");
-        }
+            0 or 1 => "загальна терапія",
+            2 or 3 => "хірургія",
+            4 or 5 => "кардіологія",
+            6 or 7 => "неврологія",
+            8 or 9 => "офтальмологія",
+            _ => ""
+        };
 
-        
-        if (cardNumber % 3 == 0)
-        {
-            Console.WriteLine("черговий огляд: так");
-        }
+        Console.WriteLine($"Відділення: {dept}");
+        Console.WriteLine($"пільгова картка: {(card % 2 == 0 ? "так" : "ні")}");
+        Console.WriteLine($"черговий огляд: {(card % 3 == 0 ? "так" : "ні")}");
     }
 }

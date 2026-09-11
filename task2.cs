@@ -1,18 +1,18 @@
 using System;
 using System.Globalization;
 
-class Task2
+public static class Task2
 {
-    static void Main()
+    public static void Run()
     {
-        string inputPrice = Console.ReadLine();
-        string inputCount = Console.ReadLine();
-        string inputDiscount = Console.ReadLine();
-        double price = double.Parse(inputPrice.Replace(',', '.'), CultureInfo.InvariantCulture);
-        double count = double.Parse(inputCount.Replace(',', '.'), CultureInfo.InvariantCulture);
-        double discount = double.Parse(inputDiscount.Replace(',', '.'), CultureInfo.InvariantCulture);
-        double total = price * count * (1 - discount / 100);
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        Console.WriteLine(total);
+        double price = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
+        int visits = int.Parse(Console.ReadLine());
+        int discount = int.Parse(Console.ReadLine());
+
+        double total = price * visits * (1.0 - (double)discount / 100.0);
+
+        Console.WriteLine($"Сума: {total:F2} грн");
     }
 }

@@ -1,17 +1,17 @@
 using System;
 using System.Globalization;
 
-class Task1
+public static class Task1
 {
-    static void Main()
+    public static void Run()
     {
-        
-        string inputWeight = Console.ReadLine();
-        string inputHeight = Console.ReadLine();
-        double weight = double.Parse(inputWeight.Replace(',', '.'), CultureInfo.InvariantCulture);
-        double height = double.Parse(inputHeight.Replace(',', '.'), CultureInfo.InvariantCulture);
-        
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+        double weight = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
+        double height = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
+
         double bmi = weight / (height * height);
-        Console.WriteLine(bmi);
+
+        Console.WriteLine($"ІМТ: {bmi:F2}");
     }
 }
