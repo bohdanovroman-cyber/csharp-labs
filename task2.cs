@@ -1,18 +1,41 @@
-using System;
-using System.Globalization;
+namespace Lab02;
 
-public static class Task2
+public class Task2
 {
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int number = int.Parse(Console.ReadLine());
 
-        double price = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
-        int visits = int.Parse(Console.ReadLine());
-        int discount = int.Parse(Console.ReadLine());
+        int[] price = new int[number];
 
-        double total = price * visits * (1.0 - (double)discount / 100.0);
+        for (int i = 0; i < number; i++)
+        {
+            price[i] = int.Parse(Console.ReadLine());
+        }
 
-        Console.WriteLine($"Сума: {total:F2} грн");
+        string beforeSort = string.Join(" ", price);
+
+        for (int i = 0; i < number - 1; i++)
+        {
+            for (int j = 0; j < number - i - 1; j++)
+            {
+                if (price[j] > price[j + 1])
+                {
+                    int temp = price[j];
+                    price[j] = price[j + 1];
+                    price[j + 1] = temp;
+                }
+            }
+        }
+
+        string afterSort = string.Join(" ", price);
+
+        int min = price[0];
+        int max = price[number - 1];
+
+        Console.WriteLine($"Черга (до):     {beforeSort}");
+        Console.WriteLine($"Черга (після):  {afterSort}");
+        Console.WriteLine($"Найдешевший:    {min} грн");
+        Console.WriteLine($"Найдорожчий:    {max} грн");
     }
 }

@@ -1,26 +1,51 @@
-using System;
+namespace Lab02;
 
-public static class Task6
+public class Task6
 {
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int number = int.Parse(Console.ReadLine());
 
-        int card = int.Parse(Console.ReadLine());
-        int lastDigit = card % 10;
+        int[][] doctors = new int[number][];
 
-        string dept = lastDigit switch
+        for (int i = 0; i < number; i++)
         {
-            0 or 1 => "загальна терапія",
-            2 or 3 => "хірургія",
-            4 or 5 => "кардіологія",
-            6 or 7 => "неврологія",
-            8 or 9 => "офтальмологія",
-            _ => ""
-        };
+            int k = int.Parse(Console.ReadLine());
 
-        Console.WriteLine($"Відділення: {dept}");
-        Console.WriteLine($"пільгова картка: {(card % 2 == 0 ? "так" : "ні")}");
-        Console.WriteLine($"черговий огляд: {(card % 3 == 0 ? "так" : "ні")}");
+            doctors[i] = new int[k];
+
+            for (int j = 0; j < k; j++)
+            {
+                doctors[i][j] = int.Parse(Console.ReadLine());
+            }
+        }
+
+        int bestDoctorIndex = 0;
+        int maxTotalIncome = -1;
+
+        for (int i = 0; i < number; i++)
+        {
+            int count = doctors[i].Length;
+            int sum = 0;
+
+            for (int j = 0; j < count; j++)
+            {
+                sum += doctors[i][j];
+            }
+
+            double average = (double)sum / count;
+
+            Console.WriteLine(
+                $"Лікар {i + 1}: {count} прийоми, сума={sum} грн, середня={average:F2} грн");
+
+            if (sum > maxTotalIncome)
+            {
+                maxTotalIncome = sum;
+                bestDoctorIndex = i;
+            }
+        }
+
+        Console.WriteLine(
+            $"Найбільший дохід: Лікар {bestDoctorIndex + 1} ({maxTotalIncome} грн)");
     }
 }

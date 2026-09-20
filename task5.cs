@@ -1,25 +1,42 @@
-using System;
+namespace Lab02;
 
-public static class Task5
+public class Task5
 {
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int number = int.Parse(Console.ReadLine());
 
-        int day = int.Parse(Console.ReadLine());
+        int[,] matrix = new int[number, number];
 
-        string info = day switch
+        for (int i = 0; i < number; i++)
         {
-            1 => "Понеділок, 08:00-18:00",
-            2 => "Вівторок, 08:00-18:00",
-            3 => "Середа, 09:00-17:00",
-            4 => "Четвер, 08:00-18:00",
-            5 => "П'ятниця, 08:00-16:00",
-            6 => "Субота, 09:00-14:00",
-            7 => "Неділя — вихідний",
-            _ => "невідомий день"
-        };
+            string[] parts = Console.ReadLine().Split(' ');
 
-        Console.WriteLine($"День: {info}");
+            for (int j = 0; j < number; j++)
+            {
+                matrix[i, j] = int.Parse(parts[j]);
+            }
+        }
+
+        int[] mainDiagonal = new int[number];
+        int[] antiDiagonal = new int[number];
+
+        int mainSum = 0;
+        int antiSum = 0;
+
+        for (int i = 0; i < number; i++)
+        {
+            mainDiagonal[i] = matrix[i, i];
+            mainSum += matrix[i, i];
+
+            antiDiagonal[i] = matrix[i, number - 1 - i];
+            antiSum += matrix[i, number - 1 - i];
+        }
+
+        Console.WriteLine(
+            $"Головна діагональ: {string.Join(", ", mainDiagonal)} (сума = {mainSum})");
+
+        Console.WriteLine(
+            $"Побічна діагональ: {string.Join(", ", antiDiagonal)} (сума = {antiSum})");
     }
 }

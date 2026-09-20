@@ -1,62 +1,40 @@
-using System;
-using System.Globalization;
+namespace Lab02;
 
-public static class Task7
+public class Task7
 {
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int number = int.Parse(Console.ReadLine());
 
-        int n = int.Parse(Console.ReadLine());
-        decimal[] costs = new decimal[n];
+        string[] names = new string[number];
+        double[] bmis = new double[number];
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < number; i++)
         {
-            costs[i] = decimal.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
+            names[i] = Console.ReadLine();
+            bmis[i] = double.Parse(Console.ReadLine());
         }
 
-        
-        decimal sum = 0;
-        decimal min = n > 0 ? costs[0] : 0;
-        decimal max = n > 0 ? costs[0] : 0;
-
-        foreach (var c in costs)
+        for (int i = 0; i < number - 1; i++)
         {
-            sum += c;
-            if (c < min) min = c;
-            if (c > max) max = c;
-        }
-
-        decimal avg = n > 0 ? sum / n : 0;
-
-        
-        int countAboveAvg = 0;
-        for (int i = 0; i < n; i++)
-        {
-            if (costs[i] > avg) countAboveAvg++;
-        }
-
-        
-        int idx = 0;
-        string firstOver1000 = "немає";
-        while (idx < n)
-        {
-            if (costs[idx] > 1000)
+            for (int j = 0; j < number - 1 - i; j++)
             {
-                firstOver1000 = $"№{idx + 1} ({costs[idx]:F2} грн)";
-                break;
+                if (bmis[j] < bmis[j + 1])
+                {
+                    double tempBmi = bmis[j];
+                    bmis[j] = bmis[j + 1];
+                    bmis[j + 1] = tempBmi;
+
+                    string tempName = names[j];
+                    names[j] = names[j + 1];
+                    names[j + 1] = tempName;
+                }
             }
-            idx++;
         }
 
-        // Вивід звіту
-        Console.WriteLine("=== Звіт по прийомах ===");
-        Console.WriteLine($"Кількість прийомів: {n}");
-        Console.WriteLine($"Загальна сума: {sum:F2} грн");
-        Console.WriteLine($"Середня вартість: {avg:F2} грн");
-        Console.WriteLine($"Мінімальна вартість: {min:F2} грн");
-        Console.WriteLine($"Максимальна вартість: {max:F2} грн");
-        Console.WriteLine($"Прийомів дорожчих за середнє: {countAboveAvg}");
-        Console.WriteLine($"Перший прийом > 1000 грн: {firstOver1000}");
+        for (int i = 0; i < number; i++)
+        {
+            Console.WriteLine($"#{i + 1} {names[i]}: {bmis[i]:F2}");
+        }
     }
 }

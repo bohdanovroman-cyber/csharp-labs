@@ -1,17 +1,50 @@
-using System;
-using System.Globalization;
+namespace Lab02;
 
-public static class Task1
+public class Task1
 {
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int number = int.Parse(Console.ReadLine());
 
-        double weight = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
-        double height = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
+        double[] weights = new double[number];
 
-        double bmi = weight / (height * height);
+        for (int i = 0; i < number; i++)
+        {
+            weights[i] = double.Parse(Console.ReadLine());
+        }
 
-        Console.WriteLine($"ІМТ: {bmi:F2}");
+        double sum = 0;
+        double min = weights[0];
+        double max = weights[0];
+
+        for (int i = 0; i < number; i++)
+        {
+            sum += weights[i];
+
+            if (weights[i] < min)
+            {
+                min = weights[i];
+            }
+
+            if (weights[i] > max)
+            {
+                max = weights[i];
+            }
+        }
+
+        double average = sum / number;
+
+        int countBiggerThanAvg = 0;
+
+        for (int i = 0; i < number; i++)
+        {
+            if (weights[i] > average)
+            {
+                countBiggerThanAvg++;
+            }
+        }
+
+        Console.WriteLine(
+            $"Кількість: {number} / Середня вага: {average:F1} кг / Мін / Макс: {min:F1} / {max:F1} кг / Вище середнього: {countBiggerThanAvg} з {number}");
     }
 }

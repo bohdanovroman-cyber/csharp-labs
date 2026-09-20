@@ -1,33 +1,77 @@
-using System;
+namespace Lab02;
 
-class Task4
+public class Task4
 {
-    static void Main()
+    public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int rows = int.Parse(Console.ReadLine());
+        int col = int.Parse(Console.ReadLine());
 
-        int sys = int.Parse(Console.ReadLine());
-        int dia = int.Parse(Console.ReadLine());
+        int[,] matrix = new int[rows, col];
 
-        string status = "";
+        for (int i = 0; i < rows; i++)
+        {
+            string[] parts = Console.ReadLine().Split(' ');
 
-        if (sys < 120 && dia < 80)
-        {
-            status = "норма";
-        }
-        else if (sys < 130 && dia < 80)
-        {
-            status = "підвищений";
-        }
-        else if (sys < 140 || dia < 90)
-        {
-            status = "гіпертонія 1 ступеня";
-        }
-        else
-        {
-            status = "гіпертонія 2 ступеня";
+            for (int j = 0; j < col; j++)
+            {
+                matrix[i, j] = int.Parse(parts[j]);
+            }
         }
 
-        Console.WriteLine(status);
+        for (int i = 0; i < rows; i++)
+        {
+            int rowSum = 0;
+
+            for (int j = 0; j < col; j++)
+            {
+                rowSum += matrix[i, j];
+            }
+
+            Console.WriteLine($"Лікар {i + 1}: {rowSum} прийомів");
+        }
+
+        Console.Write("По днях: ");
+
+        for (int j = 0; j < col; j++)
+        {
+            int colSum = 0;
+
+            for (int i = 0; i < rows; i++)
+            {
+                colSum += matrix[i, j];
+            }
+
+            if (j == col - 1)
+            {
+                Console.Write(colSum);
+            }
+            else
+            {
+                Console.Write(colSum + ", ");
+            }
+        }
+
+        Console.WriteLine();
+
+        int maxVal = matrix[0, 0];
+        int maxRow = 0;
+        int maxCol = 0;
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < col; j++)
+            {
+                if (matrix[i, j] > maxVal)
+                {
+                    maxVal = matrix[i, j];
+                    maxRow = i;
+                    maxCol = j;
+                }
+            }
+        }
+
+        Console.WriteLine(
+            $"Максимум: {maxVal} (Лікар {maxRow + 1}, День {maxCol + 1})");
     }
 }

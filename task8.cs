@@ -1,58 +1,65 @@
-using System;
-using System.Globalization;
+namespace Lab02;
 
-public static class Task8
+public class Task8
 {
-    public static double CalculateBMI(double weight, double height) => weight / (height * height);
-
-    public static string GetBMICategory(double bmi)
-    {
-        if (bmi < 18.5) return "недостатня вага";
-        if (bmi < 25.0) return "норма";
-        if (bmi < 30.0) return "надмірна вага";
-        return "ожиріння";
-    }
-
-    public static double CalculateCost(double price, int visits, int discount) => price * visits * (1.0 - (double)discount / 100.0);
-
-    public static string GetAgeCategory(int age)
-    {
-        if (age >= 0 && age <= 17) return "дитина";
-        if (age >= 18 && age <= 59) return "дорослий";
-        return "пенсіонер";
-    }
-
-    public static string GetPressureStatus(int sys, int dia)
-    {
-        if (sys < 120 && dia < 80) return "норма";
-        if (sys < 130 && dia < 80) return "підвищений";
-        if (sys < 140 || dia < 90) return "гіпертонія 1 ступеня";
-        return "гіпертонія 2 ступеня";
-    }
-
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        int dep = int.Parse(Console.ReadLine());
+        int weeks = int.Parse(Console.ReadLine());
 
-        double weight = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
-        double height = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
-        double price = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
-        int visits = int.Parse(Console.ReadLine());
-        int discount = int.Parse(Console.ReadLine());
-        int birthYear = int.Parse(Console.ReadLine());
-        int sys = int.Parse(Console.ReadLine());
-        int dia = int.Parse(Console.ReadLine());
+        int[,,] data = new int[dep, weeks, 2];
 
-        double bmi = CalculateBMI(weight, height);
-        string bmiCat = GetBMICategory(bmi);
-        double cost = CalculateCost(price, visits, discount);
-        int age = 2026 - birthYear;
-        string ageCat = GetAgeCategory(age);
-        string pressStat = GetPressureStatus(sys, dia);
+        for (int i = 0; i < dep; i++)
+        {
+            for (int j = 0; j < weeks; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    data[i, j, k] = int.Parse(Console.ReadLine());
+                }
+            }
+        }
 
-        Console.WriteLine($"ІМТ: {bmi:F2} -> {bmiCat}");
-        Console.WriteLine($"Сума: {cost:F2} грн");
-        Console.WriteLine($"Вік: {age} р., категорія: {ageCat}");
-        Console.WriteLine($"Тиск: {sys}/{dia} — {pressStat}");
+        int[] departmentTotals = new int[dep];
+
+        for (int i = 0; i < dep; i++)
+        {
+            Console.WriteLine($"Відділення {i + 1}:");
+
+            int totalDepartmentPatients = 0;
+
+            for (int j = 0; j < weeks; j++)
+            {
+                int morning = data[i, j, 0];
+                int evening = data[i, j, 1];
+
+                int weekSum = morning + evening;
+
+                totalDepartmentPatients += weekSum;
+
+                Console.WriteLine(
+                    $"    Тиждень {j + 1}: ранок {morning}, вечір {evening} -> разом {weekSum}");
+            }
+
+            departmentTotals[i] = totalDepartmentPatients;
+
+            Console.WriteLine(
+                $"Разом: {totalDepartmentPatients} пацієнтів");
+        }
+
+        int maxIndex = 0;
+        int maxPatients = departmentTotals[0];
+
+        for (int i = 1; i < dep; i++)
+        {
+            if (departmentTotals[i] > maxPatients)
+            {
+                maxPatients = departmentTotals[i];
+                maxIndex = i;
+            }
+        }
+
+        Console.WriteLine(
+            $"Найзавантаженіше: Відділення {maxIndex + 1} ({maxPatients} пацієнтів)");
     }
 }

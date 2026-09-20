@@ -1,19 +1,53 @@
-using System;
+namespace Lab02;
 
-public static class Task3
+public class Task3
 {
     public static void Run()
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        string[] days =
+        {
+            "Понеділок",
+            "Вівторок",
+            "Середа",
+            "Четвер",
+            "П'ятниця",
+            "Субота",
+            "Неділя"
+        };
 
-        int birthYear = int.Parse(Console.ReadLine());
-        int age = 2026 - birthYear;
+        int[] counts = new int[7];
 
-        string category = "";
-        if (age >= 0 && age <= 17) category = "дитина";
-        else if (age >= 18 && age <= 59) category = "дорослий";
-        else category = "пенсіонер";
+        for (int i = 0; i < 7; i++)
+        {
+            counts[i] = int.Parse(Console.ReadLine());
+        }
 
-        Console.WriteLine($"Вік: {age} р., категорія: {category}");
+        int total = 0;
+        int maxIdx = 0;
+        int minIdx = 0;
+
+        for (int i = 0; i < 7; i++)
+        {
+            total += counts[i];
+
+            if (counts[i] > counts[maxIdx])
+            {
+                maxIdx = i;
+            }
+
+            if (counts[i] < counts[minIdx])
+            {
+                minIdx = i;
+            }
+        }
+
+        for (int i = 0; i < 7; i++)
+        {
+            Console.WriteLine($"{days[i],-10} : {counts[i]} пацієнтів");
+        }
+
+        Console.WriteLine($"Разом:      {total}");
+        Console.WriteLine($"Найбільше:  {days[maxIdx]} ({counts[maxIdx]})");
+        Console.WriteLine($"Найменше:   {days[minIdx]} ({counts[minIdx]})");
     }
 }
