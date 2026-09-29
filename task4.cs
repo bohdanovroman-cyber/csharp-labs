@@ -1,33 +1,42 @@
 using System;
 
-class Task4
+namespace ClinicApp
 {
-    static void Main()
+    public class DoctorManager
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        private const int MaxDoctors = 50;
+        private Doctor[] _doctors = new Doctor[MaxDoctors];
+        private int _count = 0;
 
-        int sys = int.Parse(Console.ReadLine());
-        int dia = int.Parse(Console.ReadLine());
+        public int Count => _count;
 
-        string status = "";
-
-        if (sys < 120 && dia < 80)
+        public void Add(Doctor doctor)
         {
-            status = "норма";
-        }
-        else if (sys < 130 && dia < 80)
-        {
-            status = "підвищений";
-        }
-        else if (sys < 140 || dia < 90)
-        {
-            status = "гіпертонія 1 ступеня";
-        }
-        else
-        {
-            status = "гіпертонія 2 ступеня";
+            if (_count < MaxDoctors)
+            {
+                _doctors[_count++] = doctor;
+                Console.WriteLine($"Лікаря [{doctor.Id}] {doctor.FullName} додано.");
+            }
         }
 
-        Console.WriteLine(status);
+        public Doctor? FindById(int id)
+        {
+            for (int i = 0; i < _count; ++i)
+                if (_doctors[i].Id == id) return _doctors[i];
+            return null;
+        }
+
+        public void DisplayAll()
+        {
+            if (_count == 0) { Console.WriteLine("Список лікарів порожній."); return; }
+            Console.WriteLine($"=== Лікарі ({_count} / {MaxDoctors}) ===");
+            for (int i = 0; i < _count; ++i) Console.WriteLine(_doctors[i]);
+        }
+
+        public void DisplayStats()
+        {
+            Console.WriteLine($"\n=== Статистика лікарів ===");
+            Console.WriteLine($"Всього лікарів: {_count}");
+        }
     }
 }
