@@ -1,26 +1,44 @@
 using System;
 
-public static class Task6
+namespace ClinicApp
 {
-    public static void Run()
+    public class AppointmentManager
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        private const int MaxAppointments = 200;
+        private Appointment[] _appointments = new Appointment[MaxAppointments];
+        private int _count = 0;
 
-        int card = int.Parse(Console.ReadLine());
-        int lastDigit = card % 10;
+        private PatientManager _patientManager;
+        private DoctorManager _doctorManager;
 
-        string dept = lastDigit switch
+        public int Count => _count;
+
+        public AppointmentManager(PatientManager patientManager, DoctorManager doctorManager)
         {
-            0 or 1 => "загальна терапія",
-            2 or 3 => "хірургія",
-            4 or 5 => "кардіологія",
-            6 or 7 => "неврологія",
-            8 or 9 => "офтальмологія",
-            _ => ""
-        };
+            _patientManager = patientManager;
+            _doctorManager = doctorManager;
+        }
 
-        Console.WriteLine($"Відділення: {dept}");
-        Console.WriteLine($"пільгова картка: {(card % 2 == 0 ? "так" : "ні")}");
-        Console.WriteLine($"черговий огляд: {(card % 3 == 0 ? "так" : "ні")}");
+        public bool CreateAppointment(int patientId, int doctorId, DateTime dateTime)
+        {
+            var patient = _patientManager.FindById(patientId);
+            var doctor = _doctorManager.FindById(doctorId);
+
+            if (patient == null || doctor == null || !doctor.CanAcceptAt(dateTime.Hour))
+                return false;
+
+            if (_count < MaxAppointments)
+            {
+                _appointments[_count++] = new Appointment(patientId, doctorId, dateTime);
+                return true;
+            }
+            return false;
+        }
+
+        public void DisplayAll()
+        {
+            Console.WriteLine($"=== Записи на прийом ({_count}) ===");
+            for (int i = 0; i < _count; ++i) Console.WriteLine(_appointments[i]);
+        }
     }
 }
