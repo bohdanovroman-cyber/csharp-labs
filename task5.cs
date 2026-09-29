@@ -1,25 +1,39 @@
 using System;
 
-public static class Task5
+namespace ClinicApp
 {
-    public static void Run()
+    public class Appointment
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        private static int _nextId = 1;
 
-        int day = int.Parse(Console.ReadLine());
+        public int Id { get; }
+        public int PatientId { get; }
+        public int DoctorId { get; }
+        public DateTime DateTime { get; set; }
+        public string Status { get; private set; }
 
-        string info = day switch
+        public Appointment(int patientId, int doctorId, DateTime dateTime)
         {
-            1 => "Понеділок, 08:00-18:00",
-            2 => "Вівторок, 08:00-18:00",
-            3 => "Середа, 09:00-17:00",
-            4 => "Четвер, 08:00-18:00",
-            5 => "П'ятниця, 08:00-16:00",
-            6 => "Субота, 09:00-14:00",
-            7 => "Неділя — вихідний",
-            _ => "невідомий день"
-        };
+            Id = _nextId++;
+            PatientId = patientId;
+            DoctorId = doctorId;
+            DateTime = dateTime;
+            Status = "Scheduled";
+        }
 
-        Console.WriteLine($"День: {info}");
+        public bool ChangeStatus(string newStatus)
+        {
+            if (Status == "Scheduled" && (newStatus == "Cancelled" || newStatus == "Completed"))
+            {
+                Status = newStatus;
+                return true;
+            }
+            return false;
+        }
+
+        public override string ToString()
+        {
+            return $"Запис [{Id}] | Пацієнт ID: {PatientId} -> Лікар ID: {DoctorId} | Час: {DateTime:dd.MM.yyyy HH:mm} | Статус: {Status}";
+        }
     }
 }
