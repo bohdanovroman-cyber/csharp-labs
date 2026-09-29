@@ -1,17 +1,60 @@
 using System;
-using System.Globalization;
 
-public static class Task1
+namespace ClinicApp
 {
-    public static void Run()
+    public class Patient
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        private static int _nextId = 1;
 
-        double weight = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
-        double height = double.Parse(Console.ReadLine().Replace(',', '.'), CultureInfo.InvariantCulture);
+        public int Id { get; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public string BloodType { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
 
-        double bmi = weight / (height * height);
+        public int Age
+        {
+            get
+            {
+                var today = DateTime.Today;
+                int age = today.Year - DateOfBirth.Year;
+                if (DateOfBirth.Date > today.AddYears(-age)) age--;
+                return age;
+            }
+        }
 
-        Console.WriteLine($"ІМТ: {bmi:F2}");
+        public string FullName => $"{FirstName} {LastName}";
+        public bool IsAdult => Age >= 18;
+
+        public Patient(string firstName, string lastName, DateTime dateOfBirth, string bloodType, string phone, string email)
+        {
+            Id = _nextId++;
+            FirstName = firstName;
+            LastName = lastName;
+            DateOfBirth = dateOfBirth;
+            BloodType = bloodType;
+            Phone = phone;
+            Email = email;
+        }
+
+        public Patient(string firstName, string lastName) 
+            : this(firstName, lastName, new DateTime(2000, 3, 15), "Невідомо", "0000000000", "") { }
+
+        public Patient() 
+            : this("Невідомий", "Пацієнт") { }
+
+        public string GetAgeCategory()
+        {
+            if (Age < 18) return "дитина";
+            if (Age < 60) return "дорослий";
+            return "літній";
+        }
+
+        public override string ToString()
+        {
+            return $"[{Id}] {FullName} | Вік: {Age} ({GetAgeCategory()}) | Кров: {BloodType} | Тел: {Phone}";
+        }
     }
 }
