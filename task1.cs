@@ -2,59 +2,94 @@ using System;
 
 namespace ClinicApp
 {
-    public class Patient
+    public enum AppointmentStatus
     {
-        private static int _nextId = 1;
+        Scheduled,
+        Cancelled,
+        Completed
+    }
 
-        public int Id { get; }
+    public enum BloodType
+    {
+        Unknown,
+        APositive,
+        ANegative,
+        BPositive,
+        BNegative,
+        ABPositive,
+        ABNegative,
+        OPositive,
+        ONegative
+    }
+
+    public enum Speciality
+    {
+        General,
+        Cardiology,
+        Surgery,
+        Pediatrics,
+        Neurology,
+        Dermatology,
+        Dentistry,
+        Ophthalmology
+    }
+
+    public class Task1Patient
+    {
+        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string BloodType { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
+        public BloodType BloodType { get; set; }
 
-        public int Age
+        public Task1Patient(
+            int id,
+            string firstName,
+            string lastName,
+            BloodType bloodType)
         {
-            get
-            {
-                var today = DateTime.Today;
-                int age = today.Year - DateOfBirth.Year;
-                if (DateOfBirth.Date > today.AddYears(-age)) age--;
-                return age;
-            }
-        }
-
-        public string FullName => $"{FirstName} {LastName}";
-        public bool IsAdult => Age >= 18;
-
-        public Patient(string firstName, string lastName, DateTime dateOfBirth, string bloodType, string phone, string email)
-        {
-            Id = _nextId++;
+            Id = id;
             FirstName = firstName;
             LastName = lastName;
-            DateOfBirth = dateOfBirth;
             BloodType = bloodType;
-            Phone = phone;
-            Email = email;
         }
+    }
 
-        public Patient(string firstName, string lastName) 
-            : this(firstName, lastName, new DateTime(2000, 3, 15), "Невідомо", "0000000000", "") { }
+    public class Task1Doctor
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public Speciality Speciality { get; set; }
 
-        public Patient() 
-            : this("Невідомий", "Пацієнт") { }
-
-        public string GetAgeCategory()
+        public Task1Doctor(
+            int id,
+            string firstName,
+            string lastName,
+            Speciality speciality)
         {
-            if (Age < 18) return "дитина";
-            if (Age < 60) return "дорослий";
-            return "літній";
+            Id = id;
+            FirstName = firstName;
+            LastName = lastName;
+            Speciality = speciality;
         }
+    }
 
-        public override string ToString()
+    public class Task1Appointment
+    {
+        public int Id { get; set; }
+        public int PatientId { get; set; }
+        public int DoctorId { get; set; }
+        public AppointmentStatus Status { get; set; }
+
+        public Task1Appointment(
+            int id,
+            int patientId,
+            int doctorId)
         {
-            return $"[{Id}] {FullName} | Вік: {Age} ({GetAgeCategory()}) | Кров: {BloodType} | Тел: {Phone}";
+            Id = id;
+            PatientId = patientId;
+            DoctorId = doctorId;
+            Status = AppointmentStatus.Scheduled;
         }
     }
 }
