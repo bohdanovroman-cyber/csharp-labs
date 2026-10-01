@@ -2,48 +2,53 @@ using System;
 
 namespace ClinicApp
 {
-    public class Doctor
+    public struct WorkSchedule
     {
-        private static int _nextId = 1;
+        public int Start { get; }
+        public int End { get; }
 
-        public int Id { get; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Speciality { get; set; }
-        public string LicenseNumber { get; set; }
-        public string Phone { get; set; }
-        public int WorkStartHour { get; set; }
-        public int WorkEndHour { get; set; }
+        public int HoursPerDay => End - Start;
 
-        public string FullName => $"{FirstName} {LastName}";
-        public int WorkingHoursPerDay => WorkEndHour - WorkStartHour;
-        public string WorkSchedule => $"{WorkStartHour:D2}:00-{WorkEndHour:D2}:00";
+        public string Display =>
+            $"{Start:D2}:00–{End:D2}:00";
 
-        public bool CanAcceptAt(int hour) => hour >= WorkStartHour && hour < WorkEndHour;
-        public bool IsAvailableNow => CanAcceptAt(DateTime.Now.Hour);
+        public bool IsNow =>
+            Contains(DateTime.Now.Hour);
 
-        public Doctor(string firstName, string lastName, string speciality, string licenseNumber, string phone, int workStartHour = 8, int workEndHour = 17)
+        public WorkSchedule(int start, int end)
         {
-            Id = _nextId++;
-            FirstName = firstName;
-            LastName = lastName;
-            Speciality = speciality;
-            LicenseNumber = licenseNumber;
-            Phone = phone;
-            WorkStartHour = workStartHour;
-            WorkEndHour = workEndHour;
+            Start = start;
+            End = end;
         }
 
-        public Doctor(string firstName, string lastName, string speciality)
-            : this(firstName, lastName, speciality, "LIC-000", "0000000000", 8, 17) { }
-
-        public Doctor()
-            : this("Невідомий", "Лікар", "Загальна практика") { }
+        public bool Contains(int hour)
+        {
+            return hour >= Start && hour < End;
+        }
 
         public override string ToString()
         {
-            string status = IsAvailableNow ? "доступний зараз" : "не в робочий час";
-            return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Тел: {Phone} | {WorkSchedule} ({WorkingHoursPerDay} год) | {status}";
+            return $"{Display} ({HoursPerDay} год)";
+        }
+    }
+
+    public class Task2Doctor
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public WorkSchedule Schedule { get; set; }
+
+        public Task2Doctor(
+            int id,
+            string firstName,
+            string lastName,
+            WorkSchedule schedule)
+        {
+            Id = id;
+            FirstName = firstName;
+            LastName = lastName;
+            Schedule = schedule;
         }
     }
 }
