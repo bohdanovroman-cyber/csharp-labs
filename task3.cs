@@ -1,96 +1,162 @@
 using System;
+using System.Linq;
 
 namespace ClinicApp
 {
-    public class PatientManager
+    public static class ClinicFormatter
     {
-        private const int MaxPatients = 100;
-        private Patient[] _patients = new Patient[MaxPatients];
-        private int _count = 0;
-
-        public int Count => _count;
-
-        public void Add(Patient patient)
+        public static string FormatBloodType(BloodType bt)
         {
-            if (_count < MaxPatients)
+            return bt switch
             {
-                _patients[_count++] = patient;
-                Console.WriteLine($"Пацієнта [{patient.Id}] {patient.FullName} додано.");
-            }
-            else
+                BloodType.APositive => "A+",
+                BloodType.ANegative => "A-",
+                BloodType.BPositive => "B+",
+                BloodType.BNegative => "B-",
+                BloodType.ABPositive => "AB+",
+                BloodType.ABNegative => "AB-",
+                BloodType.OPositive => "O+",
+                BloodType.ONegative => "O-",
+                _ => "Невідомо"
+            };
+        }
+
+        public static string FormatSpeciality(Speciality s)
+        {
+            return s switch
             {
-                Console.WriteLine($"Не вдалося додати пацієнта, ліміт ({MaxPatients}).");
-            }
+                Speciality.General => "Загальна медицина",
+                Speciality.Cardiology => "Кардіологія",
+                Speciality.Surgery => "Хірургія",
+                Speciality.Pediatrics => "Педіатрія",
+                Speciality.Neurology => "Неврологія",
+                Speciality.Dermatology => "Дерматологія",
+                Speciality.Dentistry => "Стоматологія",
+                Speciality.Ophthalmology => "Офтальмологія",
+                _ => s.ToString()
+            };
         }
 
-        public Patient? FindById(int id)
+        public static string FormatAge(int age)
         {
-            for (int i = 0; i < _count; ++i)
-                if (_patients[i].Id == id) return _patients[i];
-            return null;
+            int lastTwo = age % 100;
+
+            if (lastTwo >= 11 && lastTwo <= 19)
+                return $"{age} років";
+
+            int last = age % 10;
+
+            if (last == 1)
+                return $"{age} рік";
+
+            if (last >= 2 && last <= 4)
+                return $"{age} роки";
+
+            return $"{age} років";
         }
 
-        public Patient[] FindByName(string name)
+        public static string FormatPhone(string phone)
         {
-            int matchCount = 0;
-            for (int i = 0; i < _count; ++i)
-                if (_patients[i].FirstName.Contains(name, StringComparison.OrdinalIgnoreCase) ||
-                    _patients[i].LastName.Contains(name, StringComparison.OrdinalIgnoreCase))
-                    matchCount++;
+            if (string.IsNullOrWhiteSpace(phone))
+                return phone;
 
-            Patient[] result = new Patient[matchCount];
-            int index = 0;
-            for (int i = 0; i < _count; ++i)
-                if (_patients[i].FirstName.Contains(name, StringComparison.OrdinalIgnoreCase) ||
-                    _patients[i].LastName.Contains(name, StringComparison.OrdinalIgnoreCase))
-                    result[index++] = _patients[i];
+            string digits = new string(
+                phone.Where(char.IsDigit).ToArray());
 
-            return result;
-        }
-
-        public bool Remove(int id)
-        {
-            for (int i = 0; i < _count; ++i)
+            if (digits.StartsWith("380") &&
+                digits.Length == 12)
             {
-                if (_patients[i].Id == id)
-                {
-                    for (int j = i; j < _count - 1; ++j)
-                        _patients[j] = _patients[j + 1];
-                    _count--;
-                    _patients[_count] = null!;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public void DisplayAll()
-        {
-            if (_count == 0) { Console.WriteLine("Список пацієнтів порожній."); return; }
-            Console.WriteLine($"=== Пацієнти ({_count} / {MaxPatients}) ===");
-            for (int i = 0; i < _count; ++i) Console.WriteLine(_patients[i]);
-        }
-
-        public void DisplayStats()
-        {
-            if (_count == 0) return;
-            double sumAge = 0;
-            int smallestIdx = 0, biggestIdx = 0, adults = 0;
-
-            for (int i = 0; i < _count; ++i)
-            {
-                sumAge += _patients[i].Age;
-                if (_patients[i].Age < _patients[smallestIdx].Age) smallestIdx = i;
-                if (_patients[i].Age > _patients[biggestIdx].Age) biggestIdx = i;
-                if (_patients[i].IsAdult) adults++;
+                digits = "0" + digits.Substring(3);
             }
 
-            Console.WriteLine("\n=== Статистика пацієнтів ===");
-            Console.WriteLine($"Всього: {_count}");
-            Console.WriteLine($"Середній вік: {sumAge / _count:F1} р.");
-            Console.WriteLine($"Наймолодший: {_patients[smallestIdx].FullName} ({_patients[smallestIdx].Age} р.)");
-            Console.WriteLine($"Найстарший: {_patients[biggestIdx].FullName} ({_patients[biggestIdx].Age} р.)");
-            Console.WriteLine($"Дорослих: {adults} з {_count}");
+            if (digits.Length == 10)
+            {
+                return $"({digits.Substring(0, 3)}) " +
+                       $"{digits.Substring(3, 3)}-" +
+                       $"{digits.Substring(6, 4)}";
+            }
+
+            return phone;
+        }
+    }
+
+    public class Task3PatientManager
+    {
+        private Task1Patient[] patients =
+            Array.Empty<Task1Patient>();
+
+        public void Add(Task1Patient patient)
+        {
+            Array.Resize(
+                ref patients,
+                patients.Length + 1);
+
+            patients[patients.Length - 1] = patient;
+        }
+
+        public Task1Patient this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= patients.Length)
+                    return null;
+
+                return patients[index];
+            }
+        }
+    }
+
+    public class Task3DoctorManager
+    {
+        private Task1Doctor[] doctors =
+            Array.Empty<Task1Doctor>();
+
+        public void Add(Task1Doctor doctor)
+        {
+            Array.Resize(
+                ref doctors,
+                doctors.Length + 1);
+
+            doctors[doctors.Length - 1] = doctor;
+        }
+
+        public Task1Doctor this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= doctors.Length)
+                    return null;
+
+                return doctors[index];
+            }
+        }
+    }
+
+    public class Task3AppointmentManager
+    {
+        private Task1Appointment[] appointments =
+            Array.Empty<Task1Appointment>();
+
+        public void Add(Task1Appointment appointment)
+        {
+            Array.Resize(
+                ref appointments,
+                appointments.Length + 1);
+
+            appointments[appointments.Length - 1] =
+                appointment;
+        }
+
+        public Task1Appointment this[int index]
+        {
+            get
+            {
+                if (index < 0 ||
+                    index >= appointments.Length)
+                    return null;
+
+                return appointments[index];
+            }
         }
     }
 }
