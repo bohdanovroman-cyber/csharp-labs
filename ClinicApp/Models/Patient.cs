@@ -1,4 +1,5 @@
 using ClinicApp.Enums;
+using ClinicApp.Utils;
 
 namespace ClinicApp.Models;
 
@@ -15,9 +16,7 @@ public class Patient
         get { return firstName; }
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
-                throw new ArgumentException("Некоректне ім'я.");
-
+            ClinicValidator.ValidateName(value, nameof(FirstName));
             firstName = value;
         }
     }
@@ -27,9 +26,7 @@ public class Patient
         get { return lastName; }
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
-                throw new ArgumentException("Некоректне прізвище.");
-
+            ClinicValidator.ValidateName(value, nameof(LastName));
             lastName = value;
         }
     }
@@ -39,12 +36,7 @@ public class Patient
         get { return dateOfBirth; }
         set
         {
-            if (value > DateTime.Today)
-                throw new ArgumentOutOfRangeException(nameof(value), "Дата не може бути в майбутньому.");
-
-            if (value.Year < 1900)
-                throw new ArgumentOutOfRangeException(nameof(value), "Дата не може бути раніше 1900 року.");
-
+            ClinicValidator.ValidateDate(value, nameof(DateOfBirth));
             dateOfBirth = value;
         }
     }
@@ -54,15 +46,7 @@ public class Patient
         get { return phone; }
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length != 10)
-                throw new ArgumentException("Номер телефону має містити 10 цифр.");
-
-            foreach (char c in value)
-            {
-                if (!char.IsDigit(c))
-                    throw new ArgumentException("Номер телефону має містити тільки цифри.");
-            }
-
+            ClinicValidator.ValidatePhone(value);
             phone = value;
         }
     }
@@ -79,15 +63,15 @@ public class Patient
         string firstName,
         string lastName,
         DateTime dateOfBirth,
+        BloodType bloodType,
         string phone,
-        string email,
-        BloodType bloodType)
+        string email)
     {
         FirstName = firstName;
         LastName = lastName;
         DateOfBirth = dateOfBirth;
+        BloodType = bloodType;
         Phone = phone;
         Email = email;
-        BloodType = bloodType;
     }
 }

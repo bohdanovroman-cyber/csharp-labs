@@ -1,4 +1,5 @@
 using ClinicApp.Enums;
+using ClinicApp.Utils;
 
 namespace ClinicApp.Models;
 
@@ -14,9 +15,7 @@ public class Doctor
         get { return firstName; }
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
-                throw new ArgumentException("Некоректне ім'я.");
-
+            ClinicValidator.ValidateName(value, nameof(FirstName));
             firstName = value;
         }
     }
@@ -26,9 +25,7 @@ public class Doctor
         get { return lastName; }
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
-                throw new ArgumentException("Некоректне прізвище.");
-
+            ClinicValidator.ValidateName(value, nameof(LastName));
             lastName = value;
         }
     }
@@ -39,7 +36,9 @@ public class Doctor
         set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Номер ліцензії не може бути порожнім.");
+                throw new ArgumentException(
+                    "Номер ліцензії не може бути порожнім.",
+                    nameof(LicenseNumber));
 
             licenseNumber = value;
         }
@@ -50,35 +49,28 @@ public class Doctor
         get { return phone; }
         set
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length != 10)
-                throw new ArgumentException("Номер телефону має містити 10 цифр.");
-
-            foreach (char c in value)
-            {
-                if (!char.IsDigit(c))
-                    throw new ArgumentException("Номер телефону має містити тільки цифри.");
-            }
-
+            ClinicValidator.ValidatePhone(value);
             phone = value;
         }
     }
 
     public Speciality Speciality { get; set; }
+
     public WorkSchedule WorkSchedule { get; set; }
 
     public Doctor(
         string firstName,
         string lastName,
+        Speciality speciality,
         string licenseNumber,
         string phone,
-        Speciality speciality,
         WorkSchedule workSchedule)
     {
         FirstName = firstName;
         LastName = lastName;
+        Speciality = speciality;
         LicenseNumber = licenseNumber;
         Phone = phone;
-        Speciality = speciality;
         WorkSchedule = workSchedule;
     }
 }
