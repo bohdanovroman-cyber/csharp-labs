@@ -237,15 +237,9 @@ static void ShowPatientMenu(Clinic clinic)
 
                     clinic.Patients.Add(newPatient);
                 }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Console.WriteLine(
-                        $"[Помилка діапазону]: {ex.Message}");
-                }
                 catch (ArgumentException ex)
                 {
-                    Console.WriteLine(
-                        $"[Помилка валідації]: {ex.Message}");
+                    Console.WriteLine(ex.Message);
                 }
                 catch (FormatException)
                 {
@@ -425,15 +419,9 @@ static void ShowDoctorMenu(Clinic clinic)
 
                     clinic.Doctors.Add(newDoctor);
                 }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Console.WriteLine(
-                        $"[Помилка діапазону]: {ex.Message}");
-                }
                 catch (ArgumentException ex)
                 {
-                    Console.WriteLine(
-                        $"[Помилка валідації]: {ex.Message}");
+                    Console.WriteLine(ex.Message);
                 }
                 catch (FormatException)
                 {
@@ -601,15 +589,9 @@ static void ShowAppointmentMenu(Clinic clinic)
                         dt,
                         duration);
                 }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Console.WriteLine(
-                        $"[Помилка діапазону]: {ex.Message}");
-                }
                 catch (ArgumentException ex)
                 {
-                    Console.WriteLine(
-                        $"[Помилка валідації]: {ex.Message}");
+                    Console.WriteLine(ex.Message);
                 }
                 catch (FormatException)
                 {
