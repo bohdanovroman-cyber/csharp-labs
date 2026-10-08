@@ -13,7 +13,13 @@ public class Appointment
     public int DurationMinutes
     {
         get { return durationMinutes; }
-        set { durationMinutes = value; }
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "Тривалість має бути більше 0.");
+
+            durationMinutes = value;
+        }
     }
 
     public AppointmentStatus Status { get; set; }

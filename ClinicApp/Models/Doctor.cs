@@ -12,25 +12,55 @@ public class Doctor
     public string FirstName
     {
         get { return firstName; }
-        set { firstName = value; }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
+                throw new ArgumentException("Некоректне ім'я.");
+
+            firstName = value;
+        }
     }
 
     public string LastName
     {
         get { return lastName; }
-        set { lastName = value; }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
+                throw new ArgumentException("Некоректне прізвище.");
+
+            lastName = value;
+        }
     }
 
     public string LicenseNumber
     {
         get { return licenseNumber; }
-        set { licenseNumber = value; }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Номер ліцензії не може бути порожнім.");
+
+            licenseNumber = value;
+        }
     }
 
     public string Phone
     {
         get { return phone; }
-        set { phone = value; }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.Length != 10)
+                throw new ArgumentException("Номер телефону має містити 10 цифр.");
+
+            foreach (char c in value)
+            {
+                if (!char.IsDigit(c))
+                    throw new ArgumentException("Номер телефону має містити тільки цифри.");
+            }
+
+            phone = value;
+        }
     }
 
     public Speciality Speciality { get; set; }
