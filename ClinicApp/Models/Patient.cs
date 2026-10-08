@@ -54,7 +54,11 @@ public class Patient
     public string Email
     {
         get { return email; }
-        set { email = value; }
+        set
+        {
+            ClinicValidator.ValidateEmail(value);
+            email = value;
+        }
     }
 
     public BloodType BloodType { get; set; }
