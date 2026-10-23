@@ -4,7 +4,7 @@ using ClinicApp.Utils;
 
 namespace ClinicApp.Models;
 
-public class Appointment : IPayable
+public class Appointment : IPayable, ICancellable
 {
     private const decimal PricePerMinute = 10m;
 
@@ -12,6 +12,7 @@ public class Appointment : IPayable
 
     private int durationMinutes;
     private bool _isPaid;
+    private string _cancellationReason = "";
 
     public int Id { get; }
 
@@ -46,6 +47,11 @@ public class Appointment : IPayable
 
     public bool IsPaid => _isPaid;
 
+    public bool IsCancelled => Status == AppointmentStatus.Cancelled;
+
+    public string CancellationReason =>
+        IsCancelled ? _cancellationReason : "";
+
     public Appointment(
         int patientId,
         int doctorId,
@@ -66,7 +72,8 @@ public class Appointment : IPayable
             return false;
 
         Status = AppointmentStatus.Cancelled;
-        Notes = reason ?? "";
+        _cancellationReason = reason ?? "";
+        Notes = _cancellationReason;
 
         return true;
     }
@@ -88,7 +95,7 @@ public class Appointment : IPayable
 
     public void MarkPaid()
     {
-        if (Status == AppointmentStatus.Cancelled)
+        if (IsCancelled)
         {
             throw new InvalidOperationException(
                 "Неможливо оплатити скасований запис.");
