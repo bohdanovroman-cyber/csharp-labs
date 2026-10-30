@@ -88,9 +88,23 @@ public class Appointment : IPayable, ICancellable
         return true;
     }
 
-    public decimal GetCost()
+    // virtual: підкласи можуть змінити ціну
+    public virtual decimal GetCost()
     {
         return DurationMinutes * PricePerMinute;
+    }
+
+    // virtual: підкласи можуть змінити опис
+    public virtual string GetDescription()
+    {
+        return "Прийом";
+    }
+
+    // Навмисно НЕ virtual: підкласи не можуть замінити його через override
+    // (у Задачі 3 побачимо, до чого це призводить)
+    public int GetPriority()
+    {
+        return 3;
     }
 
     public void MarkPaid()
@@ -106,7 +120,8 @@ public class Appointment : IPayable, ICancellable
 
     public override string ToString()
     {
-        return $"[{Id}] Пацієнт #{PatientId} -> Лікар #{DoctorId} | " +
-               $"{ScheduledAt:dd.MM.yyyy HH:mm}-{EndsAt:HH:mm} | {Status}";
+        return $"{GetDescription()} | [{Id}] Пацієнт #{PatientId} -> Лікар #{DoctorId} | " +
+               $"{ScheduledAt:dd.MM.yyyy HH:mm}-{EndsAt:HH:mm} | {Status} | " +
+               $"{GetCost():F2} грн";
     }
 }
