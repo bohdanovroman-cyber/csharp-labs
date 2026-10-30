@@ -613,6 +613,7 @@ static void ShowAppointmentMenu(Clinic clinic)
         Console.WriteLine("\n--- Управління записами на прийом ---");
         Console.WriteLine("1. Показати всі записи");
         Console.WriteLine("2. Переглянути записи за типом прийому");
+        Console.WriteLine("10. Надати VIP-знижку на запис");
         Console.WriteLine("0. Повернутися в головне меню");
         Console.Write("Оберіть дію: ");
 
@@ -627,6 +628,21 @@ static void ShowAppointmentMenu(Clinic clinic)
 
             case "2":
                 ShowAppointmentsByTypeMenu(clinic);
+                break;
+
+            case "10":
+                try
+                {
+                    Console.Write("Введіть ID запису: ");
+                    int vipId = int.Parse(Console.ReadLine()!);
+
+                    clinic.Appointments.ApplyVip(vipId);
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine(
+                        "[Помилка формату]: ID має бути числом!");
+                }
                 break;
 
             case "0":

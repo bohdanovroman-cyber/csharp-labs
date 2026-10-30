@@ -1,3 +1,4 @@
+
 using ClinicApp.Enums;
 using ClinicApp.Interfaces;
 using ClinicApp.Utils;
@@ -13,6 +14,7 @@ public class Appointment : IPayable, ICancellable
     private int durationMinutes;
     private bool _isPaid;
     private string _cancellationReason = "";
+    private decimal _discountMultiplier = 1m;
 
     public int Id { get; }
 
@@ -46,6 +48,22 @@ public class Appointment : IPayable, ICancellable
         ScheduledAt > DateTime.Now;
 
     public bool IsPaid => _isPaid;
+
+    public decimal DiscountMultiplier
+    {
+        get { return _discountMultiplier; }
+        set
+        {
+            if (value <= 0m || value > 1m)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(DiscountMultiplier),
+                    "Множник знижки має бути в межах (0; 1].");
+            }
+
+            _discountMultiplier = value;
+        }
+    }
 
     public bool IsCancelled => Status == AppointmentStatus.Cancelled;
 
@@ -88,10 +106,11 @@ public class Appointment : IPayable, ICancellable
         return true;
     }
 
-    // virtual: підкласи можуть змінити ціну
+    // ВАРІАНТ А: множник знижки зберігається в Appointment.
+    // Підкласи використовують base.GetCost(), тому знижка враховується автоматично.
     public virtual decimal GetCost()
     {
-        return DurationMinutes * PricePerMinute;
+        return DurationMinutes * PricePerMinute * DiscountMultiplier;
     }
 
     // virtual: підкласи можуть змінити опис
