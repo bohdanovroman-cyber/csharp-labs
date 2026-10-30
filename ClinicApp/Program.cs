@@ -63,8 +63,8 @@ clinic.Doctors.Add(new Doctor(
     new WorkSchedule(10, 18)));
 
 clinic.Appointments.Book(1, 1, DateTime.Now.AddDays(1).AddHours(2), 30);
-clinic.Appointments.Book(2, 2, DateTime.Now.AddDays(2).AddHours(4), 45);
-clinic.Appointments.Book(3, 3, DateTime.Now.AddDays(3).AddHours(1), 60);
+clinic.Appointments.BookUrgent(2, 2, DateTime.Now.AddDays(2).AddHours(4), "Гострий біль", 45);
+clinic.Appointments.BookSpecialist(3, 3, DateTime.Now.AddDays(3).AddHours(1), "Цукровий діабет", 60);
 
 // ===== Медичні записи =====
 clinic.MedicalRecords.Add(new Diagnosis(
@@ -106,6 +106,18 @@ clinic.MedicalRecords.Add(new Prescription(
     3, 3, DateTime.Today.AddDays(-20),
     "Метформін", "850 мг", 90,
     "2 рази на добу під час їжі"));
+    // ===== Демонстрація: override проти new =====
+// Беремо терміновий запис (другий у списку), але зберігаємо його у змінній типу Appointment
+Appointment demo = clinic.Appointments.GetAll()[1];
+
+Console.WriteLine("\n=== override проти new ===");
+Console.WriteLine($"Через змінну Appointment, GetDescription(): {demo.GetDescription()}");
+Console.WriteLine($"Через змінну Appointment, GetPriority():    {demo.GetPriority()}");
+
+UrgentAppointment urgentDemo = (UrgentAppointment)demo;
+Console.WriteLine($"Через змінну UrgentAppointment, GetPriority(): {urgentDemo.GetPriority()}");
+
+
 
 ShowMainMenu(clinic);
 
