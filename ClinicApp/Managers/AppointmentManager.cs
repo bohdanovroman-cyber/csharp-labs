@@ -355,20 +355,79 @@ public class AppointmentManager
 
         return result;
     }
+        public UrgentAppointment[] GetUrgent()
+    {
+        int count = 0;
 
-    public void DisplayAppointment(
-        Appointment app)
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is UrgentAppointment)
+                count++;
+        }
+
+        UrgentAppointment[] result = new UrgentAppointment[count];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is UrgentAppointment urgent)
+                result[index++] = urgent;
+        }
+
+        return result;
+    }
+
+    public SpecialistAppointment[] GetSpecialist()
+    {
+        int count = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is SpecialistAppointment)
+                count++;
+        }
+
+        SpecialistAppointment[] result = new SpecialistAppointment[count];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is SpecialistAppointment specialist)
+                result[index++] = specialist;
+        }
+
+        return result;
+    }
+
+    public RegularAppointment[] GetRegular()
+    {
+        int count = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is RegularAppointment)
+                count++;
+        }
+
+        RegularAppointment[] result = new RegularAppointment[count];
+        int index = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_appointments[i] is RegularAppointment regular)
+                result[index++] = regular;
+        }
+
+        return result;
+    }
+
+    p    public void DisplayAppointment(Appointment app)
     {
         if (app == null)
             return;
 
-        Patient? patient =
-            _patients.FindById(
-                app.PatientId);
-
-        Doctor? doctor =
-            _doctors.FindById(
-                app.DoctorId);
+        Patient? patient = _patients.FindById(app.PatientId);
+        Doctor? doctor = _doctors.FindById(app.DoctorId);
 
         string patientName =
             patient != null
@@ -380,15 +439,16 @@ public class AppointmentManager
                 ? doctor.FullName
                 : $"Лікар #{app.DoctorId}";
 
+        // Один код для всіх видів: поліморфізм сам підставляє потрібний опис і ціну
         string line =
-            $"[{app.Id}] {patientName} -> " +
+            $"{app.GetDescription()} | [{app.Id}] {patientName} -> " +
             $"{doctorName} | " +
             $"{app.ScheduledAt:dd.MM.yyyy HH:mm}-" +
             $"{app.EndsAt:HH:mm} | " +
-            $"{app.Status}";
+            $"{app.Status} | " +
+            $"{app.GetCost():F2} грн";
 
-        if (app.Notes != null &&
-            app.Notes.Length > 0)
+        if (app.Notes != null && app.Notes.Length > 0)
         {
             line += $" | {app.Notes}";
         }

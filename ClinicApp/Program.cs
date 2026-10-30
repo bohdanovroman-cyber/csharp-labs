@@ -134,7 +134,8 @@ static void ShowMainMenu(Clinic clinic)
         Console.WriteLine("│ 3. Записи         — прийоми, скасування      │");
         Console.WriteLine("│ 4. Медична картка — діагнози, рецепти        │");
         Console.WriteLine("│ 5. Рахунки        — оплата, борги            │");
-        Console.WriteLine("│ 6. Звіт           — загальна статистика      │");
+        Console.WriteLine("│ 6. Звіт           — загальна статистика  
+                Console.WriteLine("7. За типом прийому");    │");
         Console.WriteLine("│ 0. Вийти                                     │");
         Console.WriteLine("└──────────────────────────────────────────────┘");
         Console.Write("Оберіть розділ: ");
@@ -165,6 +166,9 @@ static void ShowMainMenu(Clinic clinic)
 
             case "6":
                 clinic.GenerateReport();
+                break;
+                            case "7":
+                ShowAppointmentsByTypeMenu(clinic);
                 break;
 
             case "0":
@@ -643,3 +647,46 @@ static void ShowDoctorMenu(Clinic clinic)
                         Console.WriteLine(
                             $"Не вдалося видалити: лікаря з ID {removeId} не знайдено.");
                     }
+
+static void ShowAppointmentsByTypeMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- Записи за типом прийому ---");
+        Console.WriteLine("1. Термінові");
+        Console.WriteLine("2. Консультації спеціалістів");
+        Console.WriteLine("3. Звичайні");
+        Console.WriteLine("0. Назад");
+        Console.Write("Оберіть дію: ");
+
+        string choice = Console.ReadLine()!;
+
+        switch (choice)
+        {
+            case "1":
+                Console.WriteLine("\n=== Термінові прийоми ===");
+                clinic.Appointments.DisplayList(
+                    clinic.Appointments.GetUrgent());
+                break;
+
+            case "2":
+                Console.WriteLine("\n=== Консультації спеціалістів ===");
+                clinic.Appointments.DisplayList(
+                    clinic.Appointments.GetSpecialist());
+                break;
+
+            case "3":
+                Console.WriteLine("\n=== Звичайні прийоми ===");
+                clinic.Appointments.DisplayList(
+                    clinic.Appointments.GetRegular());
+                break;
+
+            case "0":
+                return;
+
+            default:
+                Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
+                break;
+        }
+    }
+}                    
