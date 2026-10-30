@@ -421,7 +421,7 @@ public class AppointmentManager
         return result;
     }
 
-    p    public void DisplayAppointment(Appointment app)
+       public void DisplayAppointment(Appointment app)
     {
         if (app == null)
             return;
