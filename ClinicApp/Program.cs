@@ -174,20 +174,16 @@ static void ShowMainMenu(Clinic clinic)
 {
     while (true)
     {
-        Console.WriteLine();
-
-        Console.WriteLine("┌──────────────────────────────────────────────┐");
-        Console.WriteLine("│               МЕДИЧНА КЛІНІКА                │");
-        Console.WriteLine("├──────────────────────────────────────────────┤");
-        Console.WriteLine("│ 1. Пацієнти       — реєстрація, пошук         │");
-        Console.WriteLine("│ 2. Лікарі         — персонал, розклад         │");
-        Console.WriteLine("│ 3. Записи         — прийоми, фільтрація       │");
-        Console.WriteLine("│ 4. Медична картка — діагнози, рецепти         │");
-        Console.WriteLine("│ 5. Рахунки        — оплата, борги             │");
-        Console.WriteLine("│ 6. Звіт           — загальна статистика       │");
-        Console.WriteLine("│ 0. Вийти                                      │");
-        Console.WriteLine("└──────────────────────────────────────────────┘");
-
+        Console.WriteLine("\n=== ГОЛОВНЕ МЕНЮ КЛІНІКИ ===");
+        Console.WriteLine("1. Управління пацієнтами – картотека пацієнтів");
+        Console.WriteLine("2. Управління лікарями – лікарі та їхні графіки");
+        Console.WriteLine("3. Управління записами – запис, скасування, перегляд");
+        Console.WriteLine("4. Медична картка – діагнози, аналізи, рецепти");
+        Console.WriteLine("5. Рахунки – оплата та борги за прийоми");
+        Console.WriteLine("6. Черга – очікування, прийом");
+        Console.WriteLine("7. Звіт клініки – загальна статистика");
+        Console.WriteLine("8. Всі записи на сьогодні – розклад на сьогодні");
+        Console.WriteLine("0. Вихід з програми");
         Console.Write("Оберіть розділ: ");
 
         string choice = Console.ReadLine()!;
@@ -215,7 +211,15 @@ static void ShowMainMenu(Clinic clinic)
                 break;
 
             case "6":
+                WaitingRoomMenu(clinic);
+                break;
+
+            case "7":
                 clinic.GenerateReport();
+                break;
+
+            case "8":
+                clinic.DisplaySchedule(DateTime.Today);
                 break;
 
             case "0":
@@ -228,7 +232,82 @@ static void ShowMainMenu(Clinic clinic)
         }
     }
 }
+static void WaitingRoomMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- Черга очікування ---");
+        Console.WriteLine("1. Додати пацієнта в чергу");
+        Console.WriteLine("2. Прийняти першого");
+        Console.WriteLine("3. Хто перший?");
+        Console.WriteLine("4. Скільки в черзі");
+        Console.WriteLine("0. Повернутися в головне меню");
+        Console.Write("Оберіть дію: ");
 
+        string choice = Console.ReadLine()!;
+
+        switch (choice)
+        {
+            case "1":
+                try
+                {
+                    Console.Write("Введіть ID пацієнта: ");
+                    int id = int.Parse(Console.ReadLine()!);
+
+                    Patient? patient = clinic.Patients.FindById(id);
+
+                    if (patient == null)
+                    {
+                        Console.WriteLine($"Пацієнта з ID {id} не знайдено.");
+                        break;
+                    }
+
+                    clinic.WaitingRoom.Enqueue(patient);
+                    Console.WriteLine($"{patient.FullName} додано в чергу.");
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("[Помилка формату]: ID має бути числом!");
+                }
+                break;
+
+            case "2":
+                try
+                {
+                    Patient next = clinic.WaitingRoom.Dequeue();
+                    Console.WriteLine($"Приймаємо: {next.FullName}");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                break;
+
+            case "3":
+                try
+                {
+                    Patient first = clinic.WaitingRoom.Peek();
+                    Console.WriteLine($"Перший у черзі: {first.FullName}");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                break;
+
+            case "4":
+                Console.WriteLine($"У черзі: {clinic.WaitingRoom.Count}");
+                break;
+
+            case "0":
+                return;
+
+            default:
+                Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
+                break;
+        }
+    }
+}
 
 // =====================================================
 // МЕНЮ ПАЦІЄНТІВ
