@@ -5,6 +5,7 @@ using ClinicApp.Interfaces;
 using ClinicApp.Managers;
 using ClinicApp;
 using System.Globalization;
+using ClinicApp.Comparators;
 
 // ===== Налаштування =====
 
@@ -182,7 +183,8 @@ static void ShowMainMenu(Clinic clinic)
         Console.WriteLine("5. Рахунки – оплата та борги за прийоми");
         Console.WriteLine("6. Черга – очікування, прийом");
         Console.WriteLine("7. Звіт клініки – загальна статистика");
-        Console.WriteLine("8. Всі записи на сьогодні – розклад на сьогодні");
+        Console.WriteLine("8. Аналітика – рейтинги лікарів і пацієнтів");
+        Console.WriteLine("9. Всі записи на сьогодні – розклад на сьогодні");
         Console.WriteLine("0. Вихід з програми");
         Console.Write("Оберіть розділ: ");
 
@@ -219,6 +221,10 @@ static void ShowMainMenu(Clinic clinic)
                 break;
 
             case "8":
+                AnalyticsMenu(clinic);
+                break;
+
+            case "9":
                 clinic.DisplaySchedule(DateTime.Today);
                 break;
 
@@ -308,7 +314,117 @@ static void WaitingRoomMenu(Clinic clinic)
         }
     }
 }
+// Лінива послідовність стає колекцією, щоб її можна було сортувати
+static List<DoctorStats> CollectDoctorStats(Clinic clinic)
+{
+    List<DoctorStats> result = new();
 
+    foreach (DoctorStats stats in clinic.Analytics.ComputeDoctorStats())
+    {
+        result.Add(stats);
+    }
+
+    return result;
+}
+
+static List<PatientStats> CollectPatientStats(Clinic clinic)
+{
+    List<PatientStats> result = new();
+
+    foreach (PatientStats stats in clinic.Analytics.ComputePatientStats())
+    {
+        result.Add(stats);
+    }
+
+    return result;
+}
+
+static void AnalyticsMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- Аналітика ---");
+        Console.WriteLine("1. Лікарі за навантаженням");
+        Console.WriteLine("2. Лікарі за виручкою");
+        Console.WriteLine("3. Лікарі за алфавітом");
+        Console.WriteLine("4. Пацієнти за активністю");
+        Console.WriteLine("5. Пацієнти за витраченою сумою");
+        Console.WriteLine("0. Повернутися в головне меню");
+        Console.Write("Оберіть звіт: ");
+
+        string choice = Console.ReadLine()!;
+
+        switch (choice)
+        {
+            case "1":
+            case "2":
+            case "3":
+                List<DoctorStats> doctorStats = CollectDoctorStats(clinic);
+
+                if (doctorStats.Count == 0)
+                {
+                    Console.WriteLine("Лікарів ще немає.");
+                    break;
+                }
+
+                if (choice == "1")
+                {
+                    doctorStats.Sort();                                   // природний порядок
+                    Console.WriteLine("\n=== Лікарі за навантаженням ===");
+                }
+                else if (choice == "2")
+                {
+                    doctorStats.Sort(new DoctorByRevenueComparer());
+                    Console.WriteLine("\n=== Лікарі за виручкою ===");
+                }
+                else
+                {
+                    doctorStats.Sort(new DoctorByNameComparer());
+                    Console.WriteLine("\n=== Лікарі за алфавітом ===");
+                }
+
+                foreach (DoctorStats item in doctorStats)
+                {
+                    Console.WriteLine(item);
+                }
+                break;
+
+            case "4":
+            case "5":
+                List<PatientStats> patientStats = CollectPatientStats(clinic);
+
+                if (patientStats.Count == 0)
+                {
+                    Console.WriteLine("Пацієнтів ще немає.");
+                    break;
+                }
+
+                if (choice == "4")
+                {
+                    patientStats.Sort();                                  // природний порядок
+                    Console.WriteLine("\n=== Пацієнти за активністю ===");
+                }
+                else
+                {
+                    patientStats.Sort(new PatientBySpentComparer());
+                    Console.WriteLine("\n=== Пацієнти за витраченою сумою ===");
+                }
+
+                foreach (PatientStats item in patientStats)
+                {
+                    Console.WriteLine(item);
+                }
+                break;
+
+            case "0":
+                return;
+
+            default:
+                Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
+                break;
+        }
+    }
+}
 // =====================================================
 // МЕНЮ ПАЦІЄНТІВ
 // =====================================================
