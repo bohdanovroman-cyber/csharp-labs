@@ -144,32 +144,11 @@ UrgentAppointment urgentDemo = (UrgentAppointment)demo;
 Console.WriteLine(
     $"Через змінну UrgentAppointment, GetPriority(): {urgentDemo.GetPriority()}");
 
-/*
-Відповіді на запитання:
 
-1. GetDescription() через змінну Appointment дає опис термінового
-   прийому, тому що в класі UrgentAppointment цей метод перевизначений
-   за допомогою override. Завдяки поліморфізму викликається реалізація
-   методу фактичного типу об'єкта.
-
-2. GetPriority() через змінну Appointment повертає 3, тому що в
-   UrgentAppointment використано new. Цей оператор приховує метод
-   базового класу, але не перевизначає його. Тому через змінну
-   Appointment викликається метод базового класу.
-
-3. Щоб GetPriority() працював поліморфно, потрібно оголосити його
-   як virtual у класі Appointment, а в UrgentAppointment замінити
-   new на override.
-*/
-
-// ===== Запуск програми =====
 
 ShowMainMenu(clinic);
 
 
-// =====================================================
-// ГОЛОВНЕ МЕНЮ
-// =====================================================
 
 static void ShowMainMenu(Clinic clinic)
 {
@@ -184,7 +163,8 @@ static void ShowMainMenu(Clinic clinic)
         Console.WriteLine("6. Черга – очікування, прийом");
         Console.WriteLine("7. Звіт клініки – загальна статистика");
         Console.WriteLine("8. Аналітика – рейтинги лікарів і пацієнтів");
-        Console.WriteLine("9. Всі записи на сьогодні – розклад на сьогодні");
+        Console.WriteLine("9. Плани лікування — рефлексія, атрибути");
+        Console.WriteLine("10. Всі записи на сьогодні – розклад на сьогодні");
         Console.WriteLine("0. Вихід з програми");
         Console.Write("Оберіть розділ: ");
 
@@ -225,6 +205,10 @@ static void ShowMainMenu(Clinic clinic)
                 break;
 
             case "9":
+                TreatmentPlansMenu(clinic);
+                break;
+
+            case "10":
                 clinic.DisplaySchedule(DateTime.Today);
                 break;
 
@@ -1018,6 +1002,91 @@ static void ShowBillingMenu(Clinic clinic)
 
             default:
                 Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
+                break;
+        }
+    }
+}
+
+
+// =====================================================
+// МЕНЮ ПЛАНІВ ЛІКУВАННЯ
+// =====================================================
+
+static void TreatmentPlansMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- Плани лікування ---");
+        Console.WriteLine("1. Додати план (форма за атрибутами)");
+        Console.WriteLine("2. Показати всі плани");
+        Console.WriteLine("3. Перевірити невалідний план (демо валідатора)");
+        Console.WriteLine("4. Змінити стан плану (Activate/Complete/Cancel)");
+        Console.WriteLine("5. Інформація про тип TreatmentPlan (рефлексія)");
+        Console.WriteLine("0. Назад");
+        Console.Write("Вибір: ");
+
+        switch (Console.ReadLine())
+        {
+            case "1":
+                var plan = FormBuilder.Build<TreatmentPlan>();
+                if (clinic.TreatmentPlans.Add(plan, out var vr))
+                    Console.WriteLine("План додано.");
+                else
+                {
+                    Console.WriteLine("План невалідний:");
+                    Console.WriteLine(vr);
+                }
+                break;
+
+            case "2":
+                if (clinic.TreatmentPlans.Plans.Count == 0)
+                    Console.WriteLine("Планів немає.");
+
+                foreach (var p in clinic.TreatmentPlans.Plans)
+                    Console.WriteLine(p);
+                break;
+
+            case "3":
+                var bad = new TreatmentPlan
+                {
+                    Diagnosis = "",
+                    Description = new string('x', 600),
+                    DurationDays = 0,
+                    Cost = -5
+                };
+                Console.WriteLine(ModelValidator.Validate(bad));
+                break;
+
+            case "4":
+                Console.Write("Id плану: ");
+                if (int.TryParse(Console.ReadLine(), out int id)
+                    && clinic.TreatmentPlans.GetById(id) is { } tp)
+                {
+                    Console.Write("1-Activate 2-Complete 3-Cancel: ");
+                    bool ok = Console.ReadLine() switch
+                    {
+                        "1" => tp.Activate(),
+                        "2" => tp.Complete(),
+                        "3" => tp.Cancel(),
+                        _ => false
+                    };
+                    Console.WriteLine(ok
+                        ? $"Новий стан: {tp.Status}"
+                        : "Перехід неможливий.");
+                }
+                else
+                    Console.WriteLine("План не знайдено.");
+                break;
+
+            case "5":
+                ModelValidator.PrintInfo(typeof(TreatmentPlan));
+                break;
+
+            case "0":
+                return;
+
+            default:
+                Console.WriteLine("Невірний вибір.");
                 break;
         }
     }
