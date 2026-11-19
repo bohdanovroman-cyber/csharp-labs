@@ -72,6 +72,19 @@ clinic.Doctors.Add(new Doctor(
     "0671110003",
     new WorkSchedule(10, 18)));
 
+// ===== Task4: Завантаження збереженої сесії =====
+
+if (clinic.Session.Exists())
+{
+    Console.Write("Завантажити сесію? (y/n): ");
+    string loadAnswer = Console.ReadLine() ?? "";
+
+    if (loadAnswer.Equals("y", StringComparison.OrdinalIgnoreCase))
+    {
+        clinic.Session.LoadPatients(clinic);
+    }
+}
+
 // ===== Створення прийомів різних типів =====
 
 clinic.Appointments.Book(
@@ -144,11 +157,12 @@ UrgentAppointment urgentDemo = (UrgentAppointment)demo;
 Console.WriteLine(
     $"Через змінну UrgentAppointment, GetPriority(): {urgentDemo.GetPriority()}");
 
-
-
 ShowMainMenu(clinic);
 
 
+// =====================================================
+// ГОЛОВНЕ МЕНЮ
+// =====================================================
 
 static void ShowMainMenu(Clinic clinic)
 {
@@ -212,11 +226,21 @@ static void ShowMainMenu(Clinic clinic)
             case "10":
                 clinic.DisplaySchedule(DateTime.Today);
                 break;
-                case "11":
-    FilesMenu(clinic);
-    break;
 
+            case "11":
+                FilesMenu(clinic);
+                break;
+
+            // ===== Task4: Збереження сесії при виході =====
             case "0":
+                Console.Write("Зберегти сесію? (y/n): ");
+                string saveAnswer = Console.ReadLine() ?? "";
+
+                if (saveAnswer.Equals("y", StringComparison.OrdinalIgnoreCase))
+                {
+                    clinic.Session.SavePatients(clinic);
+                }
+
                 Console.WriteLine("Завершення роботи програми...");
                 return;
 
@@ -226,6 +250,12 @@ static void ShowMainMenu(Clinic clinic)
         }
     }
 }
+
+
+// =====================================================
+// ЧЕРГА ОЧІКУВАННЯ
+// =====================================================
+
 static void WaitingRoomMenu(Clinic clinic)
 {
     while (true)
@@ -302,7 +332,12 @@ static void WaitingRoomMenu(Clinic clinic)
         }
     }
 }
-// Лінива послідовність стає колекцією, щоб її можна було сортувати
+
+
+// =====================================================
+// АНАЛІТИКА
+// =====================================================
+
 static List<DoctorStats> CollectDoctorStats(Clinic clinic)
 {
     List<DoctorStats> result = new();
@@ -357,7 +392,7 @@ static void AnalyticsMenu(Clinic clinic)
 
                 if (choice == "1")
                 {
-                    doctorStats.Sort();                                   // природний порядок
+                    doctorStats.Sort();
                     Console.WriteLine("\n=== Лікарі за навантаженням ===");
                 }
                 else if (choice == "2")
@@ -389,7 +424,7 @@ static void AnalyticsMenu(Clinic clinic)
 
                 if (choice == "4")
                 {
-                    patientStats.Sort();                                  // природний порядок
+                    patientStats.Sort();
                     Console.WriteLine("\n=== Пацієнти за активністю ===");
                 }
                 else
@@ -413,6 +448,8 @@ static void AnalyticsMenu(Clinic clinic)
         }
     }
 }
+
+
 // =====================================================
 // МЕНЮ ПАЦІЄНТІВ
 // =====================================================
@@ -860,26 +897,20 @@ static void ShowAppointmentsByTypeMenu(Clinic clinic)
         {
             case "1":
                 Console.WriteLine("\n=== Термінові прийоми ===");
-
                 clinic.Appointments.DisplayList(
                     clinic.Appointments.GetUrgent());
-
                 break;
 
             case "2":
                 Console.WriteLine("\n=== Консультації спеціалістів ===");
-
                 clinic.Appointments.DisplayList(
                     clinic.Appointments.GetSpecialist());
-
                 break;
 
             case "3":
                 Console.WriteLine("\n=== Звичайні прийоми ===");
-
                 clinic.Appointments.DisplayList(
                     clinic.Appointments.GetRegular());
-
                 break;
 
             case "0":
@@ -1013,8 +1044,9 @@ static void ShowBillingMenu(Clinic clinic)
 
 
 // =====================================================
-// МЕНЮ ПЛАНІВ ЛІКУВАННЯ
+// МЕНЮ ФАЙЛІВ
 // =====================================================
+
 static void FilesMenu(Clinic clinic)
 {
     while (true)
@@ -1034,7 +1066,8 @@ static void FilesMenu(Clinic clinic)
             case "1":
                 Console.Write("Скільки останніх рядків показати? ");
 
-                if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0)
+                if (!int.TryParse(Console.ReadLine(), out int count)
+                    || count <= 0)
                 {
                     Console.WriteLine("Введіть правильне число.");
                     break;
@@ -1049,7 +1082,9 @@ static void FilesMenu(Clinic clinic)
                 else
                 {
                     foreach (string line in lines)
+                    {
                         Console.WriteLine(line);
+                    }
                 }
                 break;
 
@@ -1062,19 +1097,23 @@ static void FilesMenu(Clinic clinic)
                 string[] paths = clinic.Exporter.ExportAll();
 
                 Console.WriteLine("\nЗвіти створено:");
+
                 foreach (string path in paths)
+                {
                     Console.WriteLine(path);
+                }
                 break;
 
             case "4":
-    Console.Write("Введіть шлях до CSV-файлу: ");
-    string filePath = Console.ReadLine() ?? "";
+                Console.Write("Введіть шлях до CSV-файлу: ");
+                string filePath = Console.ReadLine() ?? "";
 
-    CsvImporter importer = new CsvImporter();
-    ImportResult importResult = importer.ImportPatients(clinic, filePath);
+                CsvImporter importer = new CsvImporter();
+                ImportResult importResult =
+                    importer.ImportPatients(clinic, filePath);
 
-    importResult.Display();
-    break;
+                importResult.Display();
+                break;
 
             case "0":
                 return;
@@ -1085,6 +1124,12 @@ static void FilesMenu(Clinic clinic)
         }
     }
 }
+
+
+// =====================================================
+// МЕНЮ ПЛАНІВ ЛІКУВАННЯ
+// =====================================================
+
 static void TreatmentPlansMenu(Clinic clinic)
 {
     while (true)
@@ -1102,8 +1147,11 @@ static void TreatmentPlansMenu(Clinic clinic)
         {
             case "1":
                 var plan = FormBuilder.Build<TreatmentPlan>();
+
                 if (clinic.TreatmentPlans.Add(plan, out var vr))
+                {
                     Console.WriteLine("План додано.");
+                }
                 else
                 {
                     Console.WriteLine("План невалідний:");
@@ -1113,10 +1161,14 @@ static void TreatmentPlansMenu(Clinic clinic)
 
             case "2":
                 if (clinic.TreatmentPlans.Plans.Count == 0)
+                {
                     Console.WriteLine("Планів немає.");
+                }
 
                 foreach (var p in clinic.TreatmentPlans.Plans)
+                {
                     Console.WriteLine(p);
+                }
                 break;
 
             case "3":
@@ -1127,15 +1179,18 @@ static void TreatmentPlansMenu(Clinic clinic)
                     DurationDays = 0,
                     Cost = -5
                 };
+
                 Console.WriteLine(ModelValidator.Validate(bad));
                 break;
 
             case "4":
                 Console.Write("Id плану: ");
+
                 if (int.TryParse(Console.ReadLine(), out int id)
                     && clinic.TreatmentPlans.GetById(id) is { } tp)
                 {
                     Console.Write("1-Activate 2-Complete 3-Cancel: ");
+
                     bool ok = Console.ReadLine() switch
                     {
                         "1" => tp.Activate(),
@@ -1143,12 +1198,15 @@ static void TreatmentPlansMenu(Clinic clinic)
                         "3" => tp.Cancel(),
                         _ => false
                     };
+
                     Console.WriteLine(ok
                         ? $"Новий стан: {tp.Status}"
                         : "Перехід неможливий.");
                 }
                 else
+                {
                     Console.WriteLine("План не знайдено.");
+                }
                 break;
 
             case "5":
