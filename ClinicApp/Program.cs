@@ -165,6 +165,7 @@ static void ShowMainMenu(Clinic clinic)
         Console.WriteLine("8. Аналітика – рейтинги лікарів і пацієнтів");
         Console.WriteLine("9. Плани лікування — рефлексія, атрибути");
         Console.WriteLine("10. Всі записи на сьогодні – розклад на сьогодні");
+        Console.WriteLine("11. Файли");
         Console.WriteLine("0. Вихід з програми");
         Console.Write("Оберіть розділ: ");
 
@@ -211,6 +212,9 @@ static void ShowMainMenu(Clinic clinic)
             case "10":
                 clinic.DisplaySchedule(DateTime.Today);
                 break;
+                case "11":
+    FilesMenu(clinic);
+    break;
 
             case "0":
                 Console.WriteLine("Завершення роботи програми...");
@@ -1011,7 +1015,65 @@ static void ShowBillingMenu(Clinic clinic)
 // =====================================================
 // МЕНЮ ПЛАНІВ ЛІКУВАННЯ
 // =====================================================
+static void FilesMenu(Clinic clinic)
+{
+    while (true)
+    {
+        Console.WriteLine("\n--- Файли ---");
+        Console.WriteLine("1. Останні рядки лога");
+        Console.WriteLine("2. Очистити лог");
+        Console.WriteLine("0. Назад");
+        Console.Write("Оберіть дію: ");
 
+        string choice = Console.ReadLine()!;
+
+        switch (choice)
+        {
+            case "1":
+                Console.Write("Скільки останніх рядків показати? ");
+
+                if (int.TryParse(Console.ReadLine(), out int count) && count > 0)
+                {
+                    string[] lines = clinic.Logger.GetLastLines(count);
+
+                    if (lines.Length == 0)
+                    {
+                        Console.WriteLine("Лог порожній або файл не існує.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n--- Останні записи лога ---");
+
+                        foreach (string line in lines)
+                        {
+                            Console.WriteLine(line);
+                        }
+                    }
+                }
+                else
+                {
+                    clinic.Logger.LogWarning("Некоректно введено кількість рядків лога.");
+                    Console.WriteLine("Потрібно ввести додатне число.");
+                }
+
+                break;
+
+            case "2":
+                clinic.Logger.Clear();
+                clinic.Logger.LogInfo("Лог очищено.");
+                Console.WriteLine("Лог очищено.");
+                break;
+
+            case "0":
+                return;
+
+            default:
+                clinic.Logger.LogWarning("Невірний пункт меню Файли.");
+                Console.WriteLine("Невірний вибір.");
+                break;
+        }
+    }
+}
 static void TreatmentPlansMenu(Clinic clinic)
 {
     while (true)
