@@ -1019,57 +1019,57 @@ static void FilesMenu(Clinic clinic)
 {
     while (true)
     {
-        Console.WriteLine("\n--- Файли ---");
+        Console.WriteLine("\n=== Файли ===");
         Console.WriteLine("1. Останні рядки лога");
         Console.WriteLine("2. Очистити лог");
+        Console.WriteLine("3. Експортувати всі звіти");
         Console.WriteLine("0. Назад");
-        Console.Write("Оберіть дію: ");
+        Console.Write("Ваш вибір: ");
 
-        string choice = Console.ReadLine()!;
+        string choice = Console.ReadLine() ?? "";
 
         switch (choice)
         {
             case "1":
                 Console.Write("Скільки останніх рядків показати? ");
 
-                if (int.TryParse(Console.ReadLine(), out int count) && count > 0)
+                if (!int.TryParse(Console.ReadLine(), out int count) || count <= 0)
                 {
-                    string[] lines = clinic.Logger.GetLastLines(count);
+                    Console.WriteLine("Введіть правильне число.");
+                    break;
+                }
 
-                    if (lines.Length == 0)
-                    {
-                        Console.WriteLine("Лог порожній або файл не існує.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("\n--- Останні записи лога ---");
+                string[] lines = clinic.Logger.GetLastLines(count);
 
-                        foreach (string line in lines)
-                        {
-                            Console.WriteLine(line);
-                        }
-                    }
+                if (lines.Length == 0)
+                {
+                    Console.WriteLine("Лог порожній або файл не існує.");
                 }
                 else
                 {
-                    clinic.Logger.LogWarning("Некоректно введено кількість рядків лога.");
-                    Console.WriteLine("Потрібно ввести додатне число.");
+                    foreach (string line in lines)
+                        Console.WriteLine(line);
                 }
-
                 break;
 
             case "2":
                 clinic.Logger.Clear();
-                clinic.Logger.LogInfo("Лог очищено.");
                 Console.WriteLine("Лог очищено.");
+                break;
+
+            case "3":
+                string[] paths = clinic.Exporter.ExportAll();
+
+                Console.WriteLine("\nЗвіти створено:");
+                foreach (string path in paths)
+                    Console.WriteLine(path);
                 break;
 
             case "0":
                 return;
 
             default:
-                clinic.Logger.LogWarning("Невірний пункт меню Файли.");
-                Console.WriteLine("Невірний вибір.");
+                Console.WriteLine("Невірний пункт меню.");
                 break;
         }
     }
