@@ -240,6 +240,8 @@ static void ShowMainMenu(Clinic clinic)
 
             // ===== Task4: Збереження сесії при виході =====
             case "0":
+                            clinic.Tracker.PrintSummary();
+                clinic.Tracker.SaveSummary();
                 Console.Write("Зберегти сесію? (y/n): ");
                 string saveAnswer = Console.ReadLine() ?? "";
 

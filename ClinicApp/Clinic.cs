@@ -20,6 +20,7 @@ public class Clinic
     public ClinicExporter Exporter { get; }
     public SessionManager Session { get; }
     public PatientPassportWriter Passport { get; }
+    public SessionEventTracker Tracker { get; }
 
     public Clinic(string name)
     {
@@ -36,6 +37,7 @@ public class Clinic
         Exporter = new ClinicExporter(this);
         Session = new SessionManager();
         Passport = new PatientPassportWriter(this);
+        Tracker = new SessionEventTracker(this);
 
         SubscribeEvents();
     }
@@ -54,6 +56,14 @@ public class Clinic
         Patients.PatientAdded += Passport.OnPatientAdded;
         Appointments.AppointmentCompleted += Passport.OnAppointmentCompleted;
         TreatmentPlans.PlanCompleted += Passport.OnPlanCompleted;
+
+        Patients.PatientAdded += Tracker.OnPatientAdded;
+        Patients.PatientRemoved += Tracker.OnPatientRemoved;
+        Appointments.AppointmentBooked += Tracker.OnAppointmentBooked;
+        Appointments.AppointmentCompleted += Tracker.OnAppointmentCompleted;
+        Appointments.AppointmentCancelled += Tracker.OnAppointmentCancelled;
+        Billing.PaymentProcessed += Tracker.OnPaymentProcessed;
+        TreatmentPlans.PlanCompleted += Tracker.OnPlanCompleted;
     }
 
     public void DisplaySchedule(DateTime date)
