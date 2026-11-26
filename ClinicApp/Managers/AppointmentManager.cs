@@ -18,6 +18,8 @@ public class AppointmentManager
     public int Count => _count;
 
     public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
+    public event EventHandler<AppointmentEventArgs>? AppointmentCompleted;
+    public event EventHandler<AppointmentEventArgs>? AppointmentCancelled;
 
     // ?. робить подію безпечною, коли підписників немає
     private void OnAppointmentBooked(Appointment appointment)
@@ -183,6 +185,8 @@ public class AppointmentManager
         {
             Console.WriteLine(
                 $"[Успіх] Запис [{id}] успішно скасовано.");
+
+            AppointmentCancelled?.Invoke(this, new AppointmentEventArgs(app));
         }
         else
         {
@@ -233,6 +237,8 @@ public class AppointmentManager
         {
             Console.WriteLine(
                 $"Запис [{id}] завершено.");
+
+            AppointmentCompleted?.Invoke(this, new AppointmentEventArgs(app));
         }
         else
         {

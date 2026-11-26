@@ -1201,7 +1201,7 @@ static void TreatmentPlansMenu(Clinic clinic)
                     bool ok = Console.ReadLine() switch
                     {
                         "1" => tp.Activate(),
-                        "2" => tp.Complete(),
+                                                "2" => clinic.TreatmentPlans.Complete(tp.Id),
                         "3" => tp.Cancel(),
                         _ => false
                     };

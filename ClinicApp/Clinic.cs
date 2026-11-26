@@ -1,7 +1,7 @@
 using ClinicApp.Managers;
 using ClinicApp.Models;
 using ClinicApp.Utils;
-using ClinicApp.Utils;
+
 namespace ClinicApp;
 
 public class Clinic
@@ -34,6 +34,20 @@ public class Clinic
         Logger = new ClinicLogger();
         Exporter = new ClinicExporter(this);
         Session = new SessionManager();
+
+        SubscribeEvents();
+    }
+
+    // Усі підписки зібрані в одному місці
+    private void SubscribeEvents()
+    {
+        Patients.PatientAdded += Logger.OnPatientAdded;
+        Patients.PatientRemoved += Logger.OnPatientRemoved;
+        Appointments.AppointmentBooked += Logger.OnAppointmentBooked;
+        Appointments.AppointmentCompleted += Logger.OnAppointmentCompleted;
+        Appointments.AppointmentCancelled += Logger.OnAppointmentCancelled;
+        Billing.PaymentProcessed += Logger.OnPaymentProcessed;
+        TreatmentPlans.PlanCompleted += Logger.OnPlanCompleted;
     }
 
     public void DisplaySchedule(DateTime date)

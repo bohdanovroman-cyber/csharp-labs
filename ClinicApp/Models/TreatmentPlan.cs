@@ -9,6 +9,9 @@ public class TreatmentPlan
 
     public int Id { get; private set; }
 
+    [MinValue(1)]
+    public int PatientId { get; set; }
+
     [Required]
     [MaxLength(100)]
     public string Diagnosis { get; set; } = string.Empty;
