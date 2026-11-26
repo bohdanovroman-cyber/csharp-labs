@@ -1,4 +1,4 @@
-
+using ClinicApp.Events;
 using ClinicApp.Interfaces;
 using ClinicApp.Models;
 
@@ -16,6 +16,14 @@ public class AppointmentManager
     private DoctorManager _doctors;
 
     public int Count => _count;
+
+    public event EventHandler<AppointmentEventArgs>? AppointmentBooked;
+
+    // ?. робить подію безпечною, коли підписників немає
+    private void OnAppointmentBooked(Appointment appointment)
+    {
+        AppointmentBooked?.Invoke(this, new AppointmentEventArgs(appointment));
+    }
 
     public AppointmentManager(
         PatientManager patients,
@@ -42,12 +50,16 @@ public class AppointmentManager
         return null;
     }
 
-    public bool Book(
+    // Спільна перевірка для всіх видів запису
+    private bool TryResolve(
         int patientId,
         int doctorId,
-        DateTime scheduledAt,
-        int durationMinutes = 30)
+        out Patient? patient,
+        out Doctor? doctor)
     {
+        patient = null;
+        doctor = null;
+
         if (_count >= MaxAppointments)
         {
             Console.WriteLine(
@@ -56,7 +68,7 @@ public class AppointmentManager
             return false;
         }
 
-        Patient? patient = _patients.FindById(patientId);
+        patient = _patients.FindById(patientId);
 
         if (patient == null)
         {
@@ -66,7 +78,7 @@ public class AppointmentManager
             return false;
         }
 
-        Doctor? doctor = _doctors.FindById(doctorId);
+        doctor = _doctors.FindById(doctorId);
 
         if (doctor == null)
         {
@@ -76,22 +88,77 @@ public class AppointmentManager
             return false;
         }
 
-        Appointment newAppointment =
-            new Appointment(
-                patientId,
-                doctorId,
-                scheduledAt,
-                durationMinutes);
+        return true;
+    }
 
-        _appointments[_count] = newAppointment;
+    // Додає запис, і лише після успішного додавання піднімає подію
+    private void Register(
+        Appointment appointment,
+        Patient patient,
+        Doctor doctor)
+    {
+        _appointments[_count] = appointment;
 
         _count++;
 
         Console.WriteLine(
-            $"Запис [{newAppointment.Id}] створено: " +
+            $"Запис [{appointment.Id}] створено: " +
             $"{patient.FullName} -> " +
             $"{doctor.FullName} о " +
-            $"{scheduledAt:dd.MM.yyyy HH:mm}");
+            $"{appointment.ScheduledAt:dd.MM.yyyy HH:mm}");
+
+        OnAppointmentBooked(appointment);
+    }
+
+    public bool Book(
+        int patientId,
+        int doctorId,
+        DateTime scheduledAt,
+        int durationMinutes = 30)
+    {
+        if (!TryResolve(patientId, doctorId, out Patient? patient, out Doctor? doctor))
+            return false;
+
+        Register(
+            new Appointment(patientId, doctorId, scheduledAt, durationMinutes),
+            patient!,
+            doctor!);
+
+        return true;
+    }
+
+    public bool BookUrgent(
+        int patientId,
+        int doctorId,
+        DateTime scheduledAt,
+        string reason,
+        int durationMinutes = 30)
+    {
+        if (!TryResolve(patientId, doctorId, out Patient? patient, out Doctor? doctor))
+            return false;
+
+        Register(
+            new UrgentAppointment(patientId, doctorId, scheduledAt, reason, durationMinutes),
+            patient!,
+            doctor!);
+
+        return true;
+    }
+
+    public bool BookSpecialist(
+        int patientId,
+        int doctorId,
+        DateTime scheduledAt,
+        string reason,
+        int durationMinutes = 30)
+    {
+        if (!TryResolve(patientId, doctorId, out Patient? patient, out Doctor? doctor))
+            return false;
+
+        Register(
+            new SpecialistAppointment(patientId, doctorId, scheduledAt, reason, durationMinutes),
+            patient!,
+            doctor!);
 
         return true;
     }

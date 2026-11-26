@@ -6,6 +6,7 @@ using ClinicApp.Managers;
 using ClinicApp;
 using System.Globalization;
 using ClinicApp.Comparators;
+using ClinicApp.Events;
 
 // ===== Налаштування =====
 
@@ -19,6 +20,7 @@ Console.OutputEncoding = System.Text.Encoding.UTF8;
 // ===== Створення клініки =====
 
 Clinic clinic = new Clinic("Медична Клініка");
+clinic.Appointments.AppointmentBooked += OnAppointmentBookedConsole;
 
 // ===== Додавання пацієнтів =====
 
@@ -163,7 +165,12 @@ ShowMainMenu(clinic);
 // =====================================================
 // ГОЛОВНЕ МЕНЮ
 // =====================================================
-
+static void OnAppointmentBookedConsole(object? sender, AppointmentEventArgs e)
+{
+    Console.WriteLine(
+        $"[EVENT] Запис #{e.AppointmentId} створено: пацієнт #{e.PatientId}, " +
+        $"лікар #{e.DoctorId}, {e.ScheduledAt:dd.MM.yyyy HH:mm}");
+}
 static void ShowMainMenu(Clinic clinic)
 {
     while (true)
